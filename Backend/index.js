@@ -36,7 +36,7 @@ connectToMongoDB()
       // Initialize Socket.IO server here
         const io = socket(server, {
           cors: {
-            origin: "http://localhost:3000",
+            origin: "*",
             credentials: true,
           },
         });
