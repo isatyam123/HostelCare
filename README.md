@@ -1,123 +1,104 @@
 # HostelCare
 
-HostelCare is a MERN hostel complaint management platform for students and hostel administrators. Students can register, submit maintenance complaints with image attachments, track complaint status, and chat with admins in real time. Admins can review complaints, update status, and continue support conversations from a modern dashboard.
+A full-stack hostel complaint management platform that streamlines issue reporting, complaint tracking, and student-admin communication through a centralized dashboard and real-time messaging.
 
-## Features
+## Live Demo
 
-- Student registration and login
-- Admin login with secret key validation
-- Complaint submission with Cloudinary image uploads
-- Complaint history and complaint status tracking
-- Admin complaint management dashboard
-- Category badges, priority badges, and status indicators
-- Real-time chat using Socket.IO
-- MongoDB Atlas persistence
-- Responsive Tailwind CSS frontend
+* Frontend: https://hostel-care-eta.vercel.app
+* Backend API: https://hostelcare-bqt7.onrender.com
+
+## Overview
+
+HostelCare enables students to report hostel maintenance issues, upload supporting images, monitor complaint progress, and communicate directly with administrators. Administrators can manage complaints, update statuses, and provide real-time support through an integrated chat system.
+
+## Key Features
+
+### Student Portal
+
+* Secure registration and authentication
+* Submit complaints with image attachments
+* Track complaint status in real time
+* View complaint history
+* Direct communication with administrators
+
+### Admin Portal
+
+* Secure admin authentication
+* Complaint management dashboard
+* Update complaint status (Pending, In Progress, Resolved)
+* Review complaint details and attachments
+* Real-time chat with students
+
+### Real-Time Communication
+
+* Socket.IO based messaging
+* Instant student-admin conversations
+* Live complaint support workflow
 
 ## Tech Stack
 
-- **Frontend:** React, React Router, Tailwind CSS, Axios, React Toastify, Socket.IO Client
-- **Backend:** Node.js, Express, MongoDB, Mongoose, Socket.IO
-- **Storage:** MongoDB Atlas
-- **Media Uploads:** Cloudinary unsigned upload preset
+### Frontend
 
-## Project Structure
+* React.js
+* React Router
+* Tailwind CSS
+* Axios
+* React Toastify
+* Socket.IO Client
 
-```text
-HostelCare/
-  Backend/
-    controller/
-    db/
-    models/
-    routes/
-    index.js
-  Frontend/
-    public/
-    src/
-      components/
-      pages/
-      utils/
-```
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB Atlas
+* Mongoose
+* Socket.IO
+
+### Deployment
+
+* Vercel (Frontend)
+* Render (Backend)
+
+## System Architecture
+
+Student → React Frontend → Express API → MongoDB Atlas
+
+Student/Admin ↔ Socket.IO ↔ Real-Time Chat Server
 
 ## Installation
 
-### Prerequisites
-
-- Node.js 18 or newer
-- npm
-- MongoDB Atlas connection string
-- Cloudinary unsigned upload preset configured for complaint images
-
-### Backend Setup
+### Backend
 
 ```bash
 cd Backend
 npm install
-```
-
-Create a `.env` file in `Backend/`:
-
-```env
-PORT=5000
-MONGO_URL=your_mongodb_atlas_connection_string
-ADMIN_KEY=your_admin_secret_key
-```
-
-Start the backend:
-
-```bash
 npm run dev
 ```
 
-The backend should run on `http://localhost:5000` to match the existing frontend API configuration.
+Environment Variables:
 
-### Frontend Setup
+```env
+PORT=5000
+MONGO_URL=your_mongodb_connection_string
+ADMIN_KEY=your_admin_secret_key
+```
+
+### Frontend
 
 ```bash
 cd Frontend
 npm install
-```
-
-Create a `.env` file in `Frontend/`:
-
-```env
-REACT_APP_LOCALHOST_KEY=hostelcare-user
-```
-
-Start the frontend:
-
-```bash
 npm start
 ```
 
-The React app runs on `http://localhost:3000`.
+## Future Enhancements
 
-## Available Scripts
+* Email notifications
+* Complaint analytics dashboard
+* Push notifications
+* Complaint priority prediction
+* Mobile application support
 
-### Backend
+## Author
 
-- `npm run dev` - Starts the Express server with Nodemon.
-
-### Frontend
-
-- `npm start` - Starts the React development server.
-- `npm run build` - Builds the production frontend bundle.
-- `npm test` - Runs the React test runner.
-
-## Screenshots
-
-Add project screenshots here after running the app locally:
-
-| Landing Page | Complaint Dashboard | Chat |
-| --- | --- | --- |
-| `screenshots/landing.png` | `screenshots/complaints.png` | `screenshots/chat.png` |
-
-## Environment Notes
-
-- The frontend API constants currently target `http://localhost:5000`.
-- Socket.IO is initialized by the backend and allows the frontend origin `http://localhost:3000`.
-- Cloudinary upload settings are defined in the complaint submission page.
-
-## License
-
-This project is available for educational and hostel operations use. Add a formal license file if you plan to distribute it publicly.
+Satyam Kumar
