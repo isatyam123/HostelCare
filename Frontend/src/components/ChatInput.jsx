@@ -1,172 +1,51 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Picker from 'emoji-picker-react';
-import { IoMdSend } from 'react-icons/io';
-import { BsEmojiSmileFill } from 'react-icons/bs';
+import React, { useState } from "react";
+import Picker from "emoji-picker-react";
+import { IoMdSend } from "react-icons/io";
+import { BsEmojiSmileFill } from "react-icons/bs";
 
-export default function ChatInput({handleSendMsg}) {
+export default function ChatInput({ handleSendMsg }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [msg, setMsg] = useState('');
-
-  const handleEmojiPickerHideShow = () => {
-    setShowEmojiPicker(!showEmojiPicker);
-  };
+  const [msg, setMsg] = useState("");
 
   const handleEmojiClick = (emojiObject) => {
     setMsg((prevMsg) => prevMsg + emojiObject.emoji);
   };
 
-  const handleMsg = (event) => {
-    setMsg(event.target.value);
+  const SendChat = (event) => {
+    event.preventDefault();
+    if (msg.length > 0) {
+      handleSendMsg(msg);
+      setMsg("");
+    }
   };
 
-  const SendChat = (event)=>{
-    event.preventDefault();
-    if(msg.length>0){
-        handleSendMsg(msg);
-        setMsg('');
-    }
-  }
-
   return (
-    <Container>
-      <div className="button-container">
-        <div className="emoji">
-          <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
-          {showEmojiPicker && (
-            <div className="emoji-picker-react">
-              <Picker onEmojiClick={handleEmojiClick} />
-            </div>
-          )}
+    <div className="relative border-t border-slate-200 bg-white p-3 sm:p-4">
+      {showEmojiPicker && (
+        <div className="absolute bottom-20 left-4 z-20 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
+          <Picker onEmojiClick={handleEmojiClick} />
         </div>
-      </div>
-      <form className="input-container" onSubmit={(e)=> SendChat(e)}>
+      )}
+      <form className="flex items-center gap-3" onSubmit={SendChat}>
+        <button
+          type="button"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-slate-200 bg-slate-50 text-xl text-amber-500 transition hover:bg-amber-50"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          aria-label="Toggle emoji picker"
+        >
+          <BsEmojiSmileFill />
+        </button>
         <input
+          className="hc-input"
           type="text"
           placeholder="Type your message here"
           value={msg}
-          onChange={handleMsg}
+          onChange={(event) => setMsg(event.target.value)}
         />
-        <button className="submit">
+        <button className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-blue-600 text-xl text-white transition hover:bg-blue-700" aria-label="Send message">
           <IoMdSend />
         </button>
       </form>
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: 4% 95%;
-  background-color: #080420;
-  padding: 0 2rem;
-  padding-bottom: 0.3rem;
-
-    @media screen and (min-width: 720px) amd (max-width: 1080px){
-     
-    padding: 0 1rem;
-    gap: 1rem;
- 
-    }
-  
-  
-
-  .button-container {
-    display: flex;
-    align-items: center;
-    color: white;
-    gap: 1rem;
-
-    .emoji {
-      position: relative;
-      svg {
-        font-size: 1.5rem;
-        color: #ffff00c8;
-        cursor: pointer;
-      }
-    }
-
-    .emoji-picker-react {
-      position: absolute;
-      top: -470px;
-      background-color: #080420;
-      box-shadow: 0 5px 10px #9a86f3;
-      border-color: #9a86f3;
-
-      .emoji-scroll-wrapper::-webkit-scrollbar {
-        background-color: #080420;
-        width: 5px;
-      }
-
-      .emoji-scroll-wrapper::-webkit-scrollbar-thumb {
-        background-color: #9186f3;
-      }
-
-      .emoji-categories {
-        button {
-          filter: contrast(0);
-        }
-      }
-
-      .emoji-search {
-        background-color: transparent;
-        border-color: #9186f3;
-      }
-
-      .emoji-group:before {
-        background-color: #080420;
-      }
-    }
-  }
-
-  .input-container {
-    width: 100%;
-    border-radius: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    background-color: #ffffff34;
-
-    input {
-      width: 90%;
-      height: 60%;
-      background-color: transparent;
-      color: white;
-      border: none;
-      padding-left: 1rem;
-      font-size: 1.2rem;
-
-      &::selection {
-        background-color: #9a86f3;
-      }
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    button {
-      padding: 0.3rem 2rem;
-      border-radius: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #9a86f3;
-      border: none;
-
-  @media screen and (min-width: 720px) amd (max-width: 1080px){
-    padding: 0.3rem 1rem;
-      svg {
-        font-size: 1rem;
-      }
-  }
-      
-
-      svg {
-        font-size: 2rem;
-        color: white;
-      }
-    }
-  }
-`;

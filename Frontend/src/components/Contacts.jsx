@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import Fuse from "fuse.js"; // Import Fuse.js
-import Logo from "../assets/logo.png";
+import Fuse from "fuse.js";
 import Logout from "./Logout";
+import { BrandMark } from "./ui";
 
 export default function Contacts({ contacts, currentUser, setCurrentChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -24,240 +23,69 @@ export default function Contacts({ contacts, currentUser, setCurrentChat }) {
     setCurrentChat(contact);
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const complainHandle = () => {
-    navigate("/complains");
-  };
-
-  const submitHandle = () => {
-    navigate("/submit");
-  };
-
-  // Set up Fuse.js options
-  const fuse = new Fuse(contacts, {
-    keys: ["username"], // Specify the keys to search within
-    threshold: 0.3, // Set the threshold for matching (0.0 to 1.0)
-  });
-
-  // Perform fuzzy search
-  const filteredContacts = searchQuery
-    ? fuse.search(searchQuery).map((result) => result.item)
-    : contacts;
+  const fuse = new Fuse(contacts, { keys: ["username"], threshold: 0.3 });
+  const filteredContacts = searchQuery ? fuse.search(searchQuery).map((result) => result.item) : contacts;
 
   return (
-    <>
-      {currentUserImage && currentUserName && (
-        <Container>
-          <div className="brand">
-            <img src={Logo} alt="logo" />
-            <h3>HostelCare</h3>
-          </div>
-          <div className="search">
-            <input
-              type="text"
-              placeholder="Search Contacts"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-          </div>
-          <div className="contacts">
-            {filteredContacts.map((contact, index) => {
-              return (
-                <div
-                  key={contact._id}
-                  className={`contact ${
-                    index === currentSelected ? "selected" : ""
-                  }`}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  <div className="avatar">
-                    <img src={contact.ProfileImage} alt="avatar" />
-                  </div>
-                  <div className="username">
-                    <h3>{contact.username}</h3>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="control-button">
-            <button className="complain" onClick={complainHandle}>
-              {`${currentUser.isadmin ? `All ` : `Your`} complain`}
+    <aside className="flex min-h-0 flex-col border-b border-slate-200 bg-slate-950 text-white lg:border-b-0 lg:border-r">
+      <div className="border-b border-white/10 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <BrandMark inverse />
+          <Logout />
+        </div>
+        <div className="mt-4 flex gap-2">
+          <button className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-bold text-white transition hover:bg-white/15" onClick={() => navigate("/complains")}>
+            {currentUser?.isadmin ? "All complaints" : "My complaints"}
+          </button>
+          {!currentUser?.isadmin && (
+            <button className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-emerald-600" onClick={() => navigate("/submit")}>
+              Submit
             </button>
-            {!currentUser.isadmin && (
-              <button className="Submit-complain" onClick={submitHandle}>
-                Submit complain
-              </button>
-            )}
-            <Logout />
-          </div>
-          <div className="current-user">
-            <div className="avatar">
-              <img src={currentUserImage} alt="avatar" />
+          )}
+        </div>
+      </div>
+
+      <div className="border-b border-white/10 p-4">
+        <input
+          className="w-full rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-500/20"
+          type="text"
+          placeholder="Search contacts"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+        <div className="space-y-2">
+          {filteredContacts.map((contact, index) => (
+            <button
+              key={contact._id}
+              className={`flex w-full items-center gap-3 rounded-lg p-3 text-left transition ${
+                index === currentSelected ? "bg-blue-600 text-white" : "bg-white/5 text-slate-100 hover:bg-white/10"
+              }`}
+              onClick={() => changeCurrentChat(index, contact)}
+            >
+              <img className="h-10 w-10 rounded-full bg-white object-cover" src={contact.ProfileImage} alt="avatar" />
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold">{contact.username}</span>
+            </button>
+          ))}
+          {filteredContacts.length === 0 && (
+            <div className="rounded-lg border border-white/10 p-4 text-sm text-slate-300">No contacts found.</div>
+          )}
+        </div>
+      </div>
+
+      {currentUserImage && currentUserName && (
+        <div className="border-t border-white/10 p-4">
+          <div className="flex items-center gap-3">
+            <img className="h-11 w-11 rounded-full bg-white object-cover" src={currentUserImage} alt="avatar" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold">{currentUserName}</p>
+              <p className="text-xs text-slate-400">{currentUser?.isadmin ? "Administrator" : "Student"}</p>
             </div>
-            <div className="username">
-              <h2>{currentUserName}</h2>
-            </div>
           </div>
-        </Container>
+        </div>
       )}
-    </>
+    </aside>
   );
 }
-
-const Container = styled.div`
-  display: grid;
-  grid-template-rows: 10% 10% 62% 6% 12%;
-  overflow: hidden;
-  background-color: #080420;
-  .control-button {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 0.5rem;
-      background-color: #9a86f3;
-      color: white;
-      cursor: pointer;
-    }
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 2rem;
-    }
-    h3 {
-      color: white;
-      text-transform: uppercase;
-    }
-  }
-
-  .search {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 1rem;
-
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: none;
-      outline: none;
-    }
-  }
-
-  .contacts {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    gap: 0.8rem;
-    &::-webkit-scrollbar {
-      width: 0.2rem;
-      &-thumb {
-        background-color: #ffffff39;
-        width: 0.1rem;
-        border-radius: 1rem;
-      }
-    }
-
-    .contact {
-      background-color: #ffffff34;
-      min-height: 5rem;
-      cursor: pointer;
-      width: 90%;
-      border-radius: 0.2rem;
-      padding: 0.4rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: 0.5s ease-in-out;
-
-      .avatar {
-        img {
-          height: 3rem;
-        }
-      }
-
-      .username {
-        h3 {
-          font-size: 1rem;
-          color: white;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          max-width: 400px;
-        }
-      }
-    }
-
-    .selected {
-      background-color: #9a86f3;
-    }
-  }
-
-  .current-user {
-    background-color: #0d0d30;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-
-    .avatar {
-      img {
-        height: 4rem;
-        max-inline-size: 100%;
-      }
-    }
-
-    .username {
-      h2 {
-        color: white;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 500px; /* Adjust as needed */
-      }
-    }
-
-    @media screen and (min-width: 720px) and (max-width: 1080px) {
-      gap: 0.5rem;
-
-      .username {
-        h2 {
-          font-size: 1rem;
-        }
-      }
-    }
-  }
-
-  /* Media queries for responsive font size */
-  @media screen and (max-width: 720px) {
-    .contacts .contact .username h3 {
-      font-size: 0.895rem; /* Adjust font size for small screens */
-    }
-
-    .current-user .username h2 {
-      font-size: 1rem; /* Adjust font size for small screens */
-    }
-  }
-
-  @media screen and (max-width: 480px) {
-    .contacts .contact .username h3 {
-      font-size: 0.75rem; /* Further adjust font size for very small screens */
-    }
-
-    .current-user .username h2 {
-      font-size: 0.875rem; /* Further adjust font size for very small screens */
-    }
-  }
-`;

@@ -1,250 +1,97 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios"; // Corrected import
+import axios from "axios";
 import { loginRoute } from "../utils/APIroutes";
+import AuthShell from "../components/AuthShell";
 
 const Login = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-
+  const navigate = useNavigate();
   const [isadmin, setisadmin] = useState(false);
-  const [values, setValues] = useState({
-    username: "",
-    password: "",
-    role: "student",
-    secertkey: "",
-  });
+  const [values, setValues] = useState({ username: "", password: "", role: "student", secertkey: "" });
 
   const handleValidation = () => {
-    const { password, username, role, secertkey } = values;
-    if (password === "") {
-      toast.error("Enter the complete password.", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return false;
-    } else if (username === "") {
-      toast.error("Enter the user name ", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+    if (!values.password) {
+      toast.error("Enter the complete password.", { position: "bottom-right", autoClose: 5000 });
       return false;
     }
-    if (role === "admin" && secertkey === "") {
-      toast.error("Enter the secert key to login as admin", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+    if (!values.username) {
+      toast.error("Enter the user name", { position: "bottom-right", autoClose: 5000 });
       return false;
     }
-
+    if (values.role === "admin" && !values.secertkey) {
+      toast.error("Enter the secret key to login as admin", { position: "bottom-right", autoClose: 5000 });
+      return false;
+    }
     return true;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (handleValidation()) {
-      const { username, password, role, secertkey } = values;
-      try {
-        const { data } = await axios.post(loginRoute, {
-          username,
-          password,
-          role,
-          secertkey,
-        });
+    if (!handleValidation()) return;
 
-        if (data.status === false) {
-          console.log("hehehehe");
-          toast.error(data.msg, {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-        if (data.status === true) {
-          localStorage.setItem(
-            process.env.REACT_APP_LOCALHOST_KEY,
-            JSON.stringify(data.user)
-          );
-          if(isadmin)
-          navigate("/admin");
-        else 
-        navigate("/chat"); // Navigate to the home page
-        }
-      } catch (error) {
-        toast.error("An error occurred. Please try again.", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+    try {
+      const { data } = await axios.post(loginRoute, values);
+      if (data.status === false) toast.error(data.msg, { position: "bottom-right", autoClose: 5000 });
+      if (data.status === true) {
+        localStorage.setItem(process.env.REACT_APP_LOCALHOST_KEY, JSON.stringify(data.user));
+        navigate(isadmin ? "/admin" : "/chat");
       }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.", { position: "bottom-right", autoClose: 5000 });
     }
   };
 
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-  };
+  const handleChange = (event) => setValues({ ...values, [event.target.name]: event.target.value });
+
   useEffect(() => {
     setisadmin(values.role === "admin");
   }, [values.role]);
 
   return (
     <>
-      <FormContainer>
-        <form action="" onSubmit={(event) => handleSubmit(event)}>
-          <div className="brand">
-            <img src={Logo} alt="logo" />
-            <h1>HostelCare</h1>
+      <AuthShell
+        title="Login to HostelCare"
+        subtitle="Choose your role and continue to the right workspace."
+        asideTitle="One login flow for students and administrators."
+        asideText="The same backend authentication route is preserved while the interface gets a cleaner, more responsive surface."
+        footer={
+          <>
+            Do not have an account? <Link to="/register" className="font-bold text-blue-700">Register</Link>
+          </>
+        }
+      >
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="block">
+              <span className="hc-label">Username</span>
+              <input className="hc-input mt-2" type="text" name="username" placeholder="Username" onChange={handleChange} />
+            </label>
+            <label className="block">
+              <span className="hc-label">Role</span>
+              <select className="hc-input mt-2" name="role" onChange={handleChange} value={values.role}>
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
           </div>
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={(e) => handleChange(e)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={(e) => handleChange(e)}
-          />
+          <label className="block">
+            <span className="hc-label">Password</span>
+            <input className="hc-input mt-2" type="password" name="password" placeholder="Password" onChange={handleChange} />
+          </label>
           {isadmin && (
-            <input
-              type="text"
-              placeholder="secertkey"
-              name="secertkey"
-              onChange={(e) => handleChange(e)}
-            />
+            <label className="block">
+              <span className="hc-label">Secret key</span>
+              <input className="hc-input mt-2" type="text" name="secertkey" placeholder="Admin secret key" onChange={handleChange} />
+            </label>
           )}
-          <select
-            name="role"
-            onChange={(e) => handleChange(e)}
-            value={values.role}
-          >
-            <option value="" disabled>
-              Select your role
-            </option>
-            <option value="student">Student</option>
-            <option value="admin">admin</option>
-          </select>
-
-          <button type="submit">Login User</button>
-          <span>
-            DO not have an account? <Link to="/register">Register.</Link>
-          </span>
+          <button type="submit" className="hc-primary-btn w-full">Login</button>
         </form>
-      </FormContainer>
+      </AuthShell>
       <ToastContainer />
     </>
   );
 };
-
-const FormContainer = styled.div`
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
-  background-color: #131324;
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 5rem;
-    }
-    h1 {
-      color: white;
-      text-transform: uppercase;
-    }
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    background-color: #00000076;
-    border-radius: 2rem;
-    padding: 3rem 5rem;
-  }
-  select {
-    background-color: white;
-    padding: 1rem;
-    border: 0.1rem solid #4e0eff;
-    border-radius: 0.4rem;
-    color: Balack;
-    width: 100%;
-    font-size: 1rem;
-    &:focus {
-      border: 0.1rem solid #997af0;
-      outline: none;
-    }
-  }
-  input {
-    background-color: transparent;
-    padding: 1rem;
-    border: 0.1rem solid #4e0eff;
-    border-radius: 0.4rem;
-    color: white;
-    width: 100%;
-    font-size: 1rem;
-    &:focus {
-      border: 0.1rem solid #997af0;
-      outline: none;
-    }
-  }
-  button {
-    background-color: #4e0eff;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 0.4rem;
-    font-size: 1rem;
-    text-transform: uppercase;
-    &:hover {
-      background-color: #4e0eff;
-    }
-  }
-  span {
-    color: white;
-    text-transform: uppercase;
-    a {
-      color: #4e0eff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  }
-`;
 
 export default Login;
