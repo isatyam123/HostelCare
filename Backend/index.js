@@ -36,7 +36,10 @@ connectToMongoDB()
       // Initialize Socket.IO server here
         const io = socket(server, {
           cors: {
-            origin: "*",
+            origin: [
+              "http://localhost:3000",
+              "https://hostel-care-eta.vercel.app",
+            ],
             credentials: true,
           },
         });
