@@ -1,23 +1,14 @@
-// src/components/Contact.js
-import React from 'react';
-import styled from 'styled-components';
-import { Element } from 'react-scroll';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-`;
+import React from "react";
 
 const Contact = () => (
-  <Element name="contact">
-    <Container>
-      <h2>Contact Us</h2>
-      <p>Contact details and form.</p>
-    </Container>
-  </Element>
+  <section className="bg-slate-50 py-16">
+    <div className="hc-container text-center">
+      <h2 className="text-3xl font-extrabold text-slate-950">Contact Us</h2>
+      <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+        Use HostelCare chat after login to reach hostel administration about active complaints.
+      </p>
+    </div>
+  </section>
 );
 
 export default Contact;
