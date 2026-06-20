@@ -1,4 +1,4 @@
-export const host = "http://localhost:5000";
+export const host = "https://hostelcare-bqt7.onrender.com";
 
 //user routes
 export const loginRoute = `${host}/api/auth/login`;
